@@ -2,6 +2,8 @@
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdio.h>
+
 void test_createElem(){
 	stoc medicament;
 	strcpy(medicament.med.name, "Bixtonim");
@@ -60,10 +62,76 @@ void test_modifElem(){
 	assert(floor(pharmacy.cont[1].med.concentr*100) == 2507);
 }
 
-int main(){
+void test_stergeStoc(){
+	farm pharma;
+	pharma.nrMeds = 0;
+	addElem(&pharma, "Theraflu", 21.5);
+	addElem(&pharma, "Theraflu", 21.5);
+	addElem(&pharma, "Theraflu", 21.5);
+	addElem(&pharma, "Theraflu", 21.5);
+
+	stergeStoc_s(&pharma, "Theraflu");
+	assert(pharma.nrMeds == 0);
+}
+
+void test_ordonareProduse(){
+	farm pharma;
+	pharma.nrMeds = 0;
+	addElem(&pharma, "Theraflu", 19.5);
+	addElem(&pharma, "Paracetamol", 44);
+	addElem(&pharma, "Paracetamol", 44);
+	addElem(&pharma, "Paracetamol", 44);
+	
+	addElem(&pharma, "Gripovit", 65);
+	addElem(&pharma, "Gripovit", 65);
+
+	addElem(&pharma, "Abrolen", 21.5);
+	addElem(&pharma, "Abrolen", 21.5);
+	addElem(&pharma, "Abrolen", 21.5);
+
+
+	farm aux = ordonareProduse(&pharma, "nume");
+	assert(strcmp(aux.cont[0].med.name, "Abrolen") == 0);
+
+	aux = ordonareProduse(&pharma, "concentratie");
+	assert(strcmp(aux.cont[0].med.name, "Theraflu") == 0);
+
+	aux = ordonareProduse(&pharma, "stoc");
+	assert(strcmp(aux.cont[0].med.name, "Theraflu") == 0);
+
+
+
+}
+
+void test_filtrareStoc(){
+	farm pharma;
+	pharma.nrMeds = 0;
+	addElem(&pharma, "Theraflu", 19.5);
+	addElem(&pharma, "Paracetamol", 44);
+	addElem(&pharma, "Paracetamol", 44);
+	addElem(&pharma, "Paracetamol", 44);
+	
+	addElem(&pharma, "Gripovit", 65);
+	addElem(&pharma, "Gripovit", 65);
+
+	addElem(&pharma, "Abrolen", 21.5);
+	addElem(&pharma, "Abrolen", 21.5);
+	addElem(&pharma, "Abrolen", 21.5);
+
+	farm aux = filtrareStoc(&pharma, 2);
+	assert(aux.nrMeds == 3);
+
+	aux = filtrareNume(&pharma, 'A');
+	assert(aux.nrMeds == 1);
+
+}
+
+void run_tests(){
 	test_createElem();
 	test_addElem();
 	test_searchElem();
 	test_modifElem();
-	return 0;
+	test_stergeStoc();
+	test_ordonareProduse();
+	test_filtrareStoc();
 }
