@@ -1,0 +1,181 @@
+        -:    0:Source:main.c
+        -:    0:Graph:./main.gcno
+        -:    0:Data:-
+        -:    0:Runs:0
+        -:    1:#include <stdio.h>
+        -:    2:#include <ctype.h>
+        -:    3:#include "test_service.c"
+    #####:    4:void adaugareProdus(farm* pharma){
+        -:    5:
+    #####:    6:    printf("ADAUGARE PRODUS\n");
+    #####:    7:    printf("Introduceti numele medicamentului: ");
+        -:    8:    char nume[100];
+    #####:    9:    scanf("%s", nume);
+        -:   10:    float concentr;
+    #####:   11:    if(searchElem(pharma, nume) == -1){
+    #####:   12:        printf("Introduceti concentratia medicamentului: ");
+    #####:   13:        scanf("%f", &concentr);
+        -:   14:    }
+        -:   15:    else{
+    #####:   16:        printf("Medicamentul exista deja...adaugare in stoc.");
+    #####:   17:        concentr = 0;
+        -:   18:    }
+        -:   19:
+    #####:   20:    int res = addElem(pharma, nume, concentr);
+        -:   21:
+    #####:   22:    if(res == 0){
+    #####:   23:        printf("Produs nou adaugat.");
+        -:   24:    }
+        -:   25:    else{
+    #####:   26:        printf("Stoc %s actualizat.", nume);
+        -:   27:    }
+    #####:   28:}
+        -:   29:
+    #####:   30:void modifProdus(farm* pharma){
+        -:   31:    char nume[100];
+        -:   32:    char nume_modif[100];
+        -:   33:    float concentr;
+    #####:   34:    printf("MODIFICARE PRODUS\n");
+    #####:   35:    int value = -1;
+        -:   36:    do{
+    #####:   37:        printf("Introduceti numele medicamentului de modificat: ");
+    #####:   38:        scanf("%s[^\n]", nume);
+    #####:   39:        value = searchElem(pharma, nume);
+    #####:   40:        if(value==-1){
+    #####:   41:            printf("Medicamentul nu exista...\n");
+    #####:   42:            printf("Incerci din nou? (da/nu): \n");
+        -:   43:            char ans[10];
+    #####:   44:            scanf("%s",ans);
+    #####:   45:            if(ans[0]=='n' || ans[0]=='N')return;
+        -:   46:        }
+    #####:   47:    }while(value==-1);
+        -:   48:    
+    #####:   49:    printf("Introduceti numele nou al medicamentului (sau \"none\" daca nu este cazul): ");
+    #####:   50:    scanf("%s", nume_modif);
+    #####:   51:    char* p = nume_modif;
+    #####:   52:    for(; *p;++p){
+    #####:   53:        if(*p>='A' && *p<='Z'){
+    #####:   54:            *p = 'a'+(*p-'A');
+        -:   55:        }
+        -:   56:    }
+        -:   57:
+    #####:   58:    if(strcmp(nume_modif, "none")==0){
+    #####:   59:        nume_modif[0]=0;
+        -:   60:    }
+    #####:   61:    printf("Introduceti concentratia noua a medicamentului (sau 0 daca nu este cazul): ");
+    #####:   62:    scanf("%f", &concentr);
+        -:   63:
+    #####:   64:    modifElem(pharma, nume,nume_modif,concentr);
+    #####:   65:    printf("Medicament actualizat!");
+        -:   66:    
+        -:   67:}
+        -:   68:
+    #####:   69:void afisSimpla(farm* aux){
+    #####:   70:    for(int i=0;i<aux->nrMeds;++i){
+    #####:   71:        printf("*****************************************\n");
+    #####:   72:        printf("MEDICAMENTUL %d\n", aux->cont[i].uniqueCode);
+    #####:   73:        printf("--------------------\n");
+    #####:   74:        printf("Nume: %s\n", aux->cont[i].med.name);
+    #####:   75:        printf("Concentratie: %f \n",aux->cont[i].med.concentr);
+    #####:   76:        printf("Cantitate: %d\n", aux->cont[i].quantity);
+        -:   77:    }
+        -:   78:
+        -:   79:
+    #####:   80:}
+        -:   81:
+    #####:   82:void afisProduse(farm* pharma){
+        -:   83:    char cond[100];
+    #####:   84:    printf("Introdu conditia de afisare (nume/concentratie/stoc): \n");
+    #####:   85:    scanf("%s", cond);
+    #####:   86:    farm aux = ordonareProduse(pharma, cond);
+    #####:   87:    afisSimpla(&aux);
+    #####:   88:}
+        -:   89:
+        -:   90:
+    #####:   91:void stergeStoc(farm* pharma){
+        -:   92:    char nume[100];
+    #####:   93:    int value = -1;
+        -:   94:    do{
+    #####:   95:        printf("Introduceti numele stocului de sters: ");
+    #####:   96:        scanf("%s[^\n]", nume);
+    #####:   97:        value = searchElem(pharma, nume);
+    #####:   98:        if(value==-1){
+    #####:   99:            printf("Stocul nu exista...\n");
+    #####:  100:            printf("Incerci din nou? (da/nu): \n");
+        -:  101:            char ans[10];
+    #####:  102:            scanf("%s",ans);
+    #####:  103:            if(ans[0]=='n' || ans[0]=='N')return;
+        -:  104:        }
+    #####:  105:    }while(value==-1);
+    #####:  106:    stergeStoc_s(pharma, nume);
+        -:  107:}
+        -:  108:
+    #####:  109:void filtrareMedic(farm* pharma){
+        -:  110:    int cond;
+    #####:  111:    printf("FILTRARE\n\n");
+    #####:  112:    printf("1.Filtrare după stoc.\n");
+    #####:  113:    printf("2.Filtrare după prima literă din nume.\n");
+    #####:  114:    printf("Introdu numărul condiției de filtrare: \n");
+        -:  115:
+    #####:  116:    scanf("%d", &cond);
+        -:  117:
+        -:  118:    farm aux;
+        -:  119:    int condStoc;
+        -:  120:    char condNume;
+    #####:  121:    switch (cond)
+        -:  122:    {
+    #####:  123:        case 1:
+    #####:  124:            printf("Introdu marimea minima a stocului: \n");
+    #####:  125:            scanf("%d", &condStoc);
+    #####:  126:            aux = filtrareStoc(pharma, condStoc);
+    #####:  127:            break;
+        -:  128:    
+    #####:  129:        case 2:
+    #####:  130:            printf("Introdu litera cautata : \n");
+    #####:  131:            scanf("%c", &condNume);
+    #####:  132:            aux = filtrareNume(pharma, condNume);
+    #####:  133:            break;
+        -:  134:    }
+    #####:  135:    afisSimpla(&aux);
+    #####:  136:}
+        -:  137:
+    #####:  138:int main(int argv, char** argc){
+    #####:  139:    run_tests();
+        -:  140:    farm farmacia_nelu;
+    #####:  141:    farmacia_nelu.nrMeds = 0;
+    #####:  142:    char comenzi[5][50]={"ADAUGARE\n", "MODIFICARE\n","AFISARE\n", "STERGERE\n", "FILTRARE\n"};
+    #####:  143:    while(1){
+    #####:  144:        for(int i=0;i<5;++i){
+    #####:  145:            printf("%d.%s",i+1, comenzi[i]);
+        -:  146:        }
+    #####:  147:        printf("Alege comanda: ");
+        -:  148:        int com;
+    #####:  149:        scanf("%d", &com);
+    #####:  150:        switch(--com){
+        -:  151:
+    #####:  152:            case(0):
+    #####:  153:                adaugareProdus(&farmacia_nelu);
+    #####:  154:                break;
+        -:  155:            
+    #####:  156:            case(1):
+    #####:  157:                modifProdus(&farmacia_nelu);
+    #####:  158:                break;
+        -:  159:            
+    #####:  160:            case(2):
+    #####:  161:                afisProduse(&farmacia_nelu);
+    #####:  162:                break;
+        -:  163:            
+    #####:  164:            case(3):
+    #####:  165:                stergeStoc(&farmacia_nelu);
+    #####:  166:                break;
+        -:  167:            
+    #####:  168:            case(4):
+    #####:  169:                filtrareMedic(&farmacia_nelu);
+    #####:  170:                break;
+        -:  171:
+        -:  172:        }
+    #####:  173:        printf("\n");
+        -:  174:    }
+        -:  175:
+        -:  176:    return 0;
+        -:  177:}

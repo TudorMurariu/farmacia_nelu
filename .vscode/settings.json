@@ -2,5 +2,9 @@
     "files.associations": {
         "typeinfo": "c",
         "string.h": "c"
-    }
+    },
+    "gcovViewer.buildDirectories": [
+        "/home/tefan/Facultate/A1S2/OOP/Laboratoare/farmacia_nelu"
+    ],
+    "C_Cpp.errorSquiggles": "Disabled"
 }

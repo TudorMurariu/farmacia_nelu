@@ -19,21 +19,22 @@ void test_createElem(){
 }
 
 void test_addElem(){
-	farm pharmacy;
-	pharmacy.nrMeds = 0;
+	farm pharmacy = new_farm();
 	addElem(&pharmacy, "Bixtonim",20.01);
 
+	
 	assert(pharmacy.nrMeds == 1);
 	stoc test =  createElem("Bixtonim",20.01);
-	assert(compareStocs(&pharmacy.cont[0],&test)==1);
+	assert(compareStocs(getPos(&pharmacy,0),&test)==1);
 
 	addElem(&pharmacy, "Bixtonim", 20.01);
-	assert(pharmacy.cont[0].quantity==2);
+	assert(getPos(&pharmacy,0)->quantity == 2);
 
+	destroyFarm(&pharmacy);
 }
 
 void test_searchElem(){
-	farm pharmacy;
+	farm pharmacy = new_farm() ;
 	pharmacy.nrMeds = 0;
 	addElem(&pharmacy, "Bixtonim",20.01);
 	addElem(&pharmacy, "Paracetamol",18.2);
@@ -43,11 +44,11 @@ void test_searchElem(){
 	strcpy(medic.name , "Aspacartim");
 
 	assert(searchElem(&pharmacy,medic.name) == 2);
-
+	destroyFarm(&pharmacy);
 }
 
 void test_modifElem(){
-	farm pharmacy;
+	farm pharmacy = new_farm();
 	pharmacy.nrMeds = 0;
 	addElem(&pharmacy, "Bixtonim",20.01);
 	addElem(&pharmacy, "Paracetamol",18.2);
@@ -55,15 +56,17 @@ void test_modifElem(){
 
 	modifElem(&pharmacy, "Aspacartim", "Theraflu", 0);
 
-	assert(strcmp(pharmacy.cont[2].med.name, "Theraflu")==0);
+	assert(strcmp(getPos(&pharmacy, 2)->med.name, "Theraflu")==0);
 
 	modifElem(&pharmacy, "Paracetamol", "", 25.07);
 
-	assert(floor(pharmacy.cont[1].med.concentr*100) == 2507);
+	assert(floor(getPos(&pharmacy, 1)->med.concentr*100) == 2507);
+
+	destroyFarm(&pharmacy);
 }
 
 void test_stergeStoc(){
-	farm pharma;
+	farm pharma = new_farm();
 	pharma.nrMeds = 0;
 	addElem(&pharma, "Theraflu", 21.5);
 	addElem(&pharma, "Theraflu", 21.5);
@@ -72,10 +75,12 @@ void test_stergeStoc(){
 
 	stergeStoc_s(&pharma, "Theraflu");
 	assert(pharma.nrMeds == 0);
+	destroyFarm(&pharma);
+
 }
 
 void test_ordonareProduse(){
-	farm pharma;
+	farm pharma = new_farm();
 	pharma.nrMeds = 0;
 	addElem(&pharma, "Theraflu", 19.5);
 	addElem(&pharma, "Paracetamol", 44);
@@ -89,23 +94,26 @@ void test_ordonareProduse(){
 	addElem(&pharma, "Abrolen", 21.5);
 	addElem(&pharma, "Abrolen", 21.5);
 
+	farm aux = new_farm();
+	ordonareProduse(&pharma, "nume", &aux);
 
-	farm aux = ordonareProduse(&pharma, "nume");
-	assert(strcmp(aux.cont[0].med.name, "Abrolen") == 0);
+	
+	assert(strcmp(getPos(&aux, 0)->med.name, "Abrolen") == 0);
 
-	aux = ordonareProduse(&pharma, "concentratie");
-	assert(strcmp(aux.cont[0].med.name, "Theraflu") == 0);
+	ordonareProduse(&pharma, "concentratie", &aux);
+	assert(strcmp(getPos(&aux, 0)->med.name, "Theraflu") == 0);
 
-	aux = ordonareProduse(&pharma, "stoc");
-	assert(strcmp(aux.cont[0].med.name, "Theraflu") == 0);
+	ordonareProduse(&pharma, "stoc", &aux);
+	assert(strcmp(getPos(&aux, 0)->med.name, "Theraflu") == 0);
+	
 
-
+	destroyFarm(&pharma);
+	destroyFarm(&aux);
 
 }
 
 void test_filtrareStoc(){
-	farm pharma;
-	pharma.nrMeds = 0;
+	farm pharma = new_farm();
 	addElem(&pharma, "Theraflu", 19.5);
 	addElem(&pharma, "Paracetamol", 44);
 	addElem(&pharma, "Paracetamol", 44);
@@ -118,11 +126,18 @@ void test_filtrareStoc(){
 	addElem(&pharma, "Abrolen", 21.5);
 	addElem(&pharma, "Abrolen", 21.5);
 
-	farm aux = filtrareStoc(&pharma, 2);
+	farm aux = new_farm();
+	filtrareStoc(&pharma, 2, &aux);
 	assert(aux.nrMeds == 3);
-
-	aux = filtrareNume(&pharma, 'A');
+	destroyFarm(&aux);
+	
+	filtrareNume(&pharma, 'A', &aux);
 	assert(aux.nrMeds == 1);
+	
+	
+	destroyFarm(&pharma);
+	destroyFarm(&aux);
+
 
 }
 
@@ -135,3 +150,4 @@ void run_tests(){
 	test_ordonareProduse();
 	test_filtrareStoc();
 }
+

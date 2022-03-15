@@ -1,0 +1,260 @@
+        -:    0:Source:service.c
+        -:    0:Graph:./main.gcno
+        -:    0:Data:-
+        -:    0:Runs:0
+        -:    1:#include <stdlib.h>
+        -:    2:#include <string.h>
+        -:    3:#include "entities.c"
+        -:    4:#include <math.h>
+        -:    5:
+    #####:    6:int cmpNume(const void *a, const void *b){
+    #####:    7:    stoc* x = (stoc*)a;
+    #####:    8:    stoc* y = (stoc*)b;
+    #####:    9:    return strcmp(x->med.name,y->med.name);
+        -:   10:}
+        -:   11:
+    #####:   12:int cmpConcentr(const void* a, const void* b){
+    #####:   13:    stoc* x = (stoc*)a;
+    #####:   14:    stoc* y = (stoc*)b;
+    #####:   15:    return floor((x->med.concentr - y->med.concentr)*100);
+        -:   16:}
+        -:   17:
+    #####:   18:int cmpMarimeStoc(const void* a, const void* b){
+    #####:   19:    stoc* x = (stoc*)a;
+    #####:   20:    stoc* y = (stoc*)b;
+    #####:   21:    return (x->quantity - y->quantity);
+        -:   22:}
+        -:   23:
+        -:   24:
+    #####:   25:stoc createElem(char *name, float conc){
+        -:   26:    /*
+        -:   27:        Creaza un element de tipul stoc nou
+        -:   28:
+        -:   29:        Args:
+        -:   30:            char* name - adresa catre adresa numelui
+        -:   31:            float conc - concentratia produsului
+        -:   32:
+        -:   33:        Returns:
+        -:   34:            type stoc - Elementul creat cu datele primite
+        -:   35:
+        -:   36:    */
+        -:   37:    stoc nMed;
+    #####:   38:    strcpy(nMed.med.name, name);
+    #####:   39:    nMed.med.concentr = conc;
+        -:   40:
+    #####:   41:    nMed.quantity = 1;
+    #####:   42:    nMed.uniqueCode = rand() % 1000;
+        -:   43:
+    #####:   44:    return nMed;
+        -:   45:}
+        -:   46:
+    #####:   47:int searchElem(farm* pharma, char* name){
+        -:   48:    /*
+        -:   49:        Cauta elementul transmis in lista.
+        -:   50:
+        -:   51:        Args:
+        -:   52:            char* name - numele produsului cautat
+        -:   53:            farm* pharma - lista in care sa cauta
+        -:   54:
+        -:   55:        Returns:
+        -:   56:            -1 - daca elementul nu se afla in lista
+        -:   57:
+        -:   58:            Pozitia elementului din lista
+        -:   59:    */    
+        -:   60:
+    #####:   61:    int n = pharma->nrMeds;
+        -:   62:
+    #####:   63:    for(int i=0;i<n;++i){
+    #####:   64:        if(strcmp(pharma->cont[i].med.name, name) == 0)
+    #####:   65:            return i;
+        -:   66:    }
+        -:   67:
+    #####:   68:    return -1;
+        -:   69:}
+        -:   70:
+    #####:   71:int addElem(farm* pharma, char* name, float conc){
+        -:   72:    /*
+        -:   73:        Adauga un medicament nou sau incrementeaza cantitatea existenta deja
+        -:   74:        pe stoc.
+        -:   75:
+        -:   76:        Args:
+        -:   77:            farm* pharma - stocul in care se adauga
+        -:   78:            char* name - pointer catre numele medicamentului
+        -:   79:            float conc - concetratia medicamentului
+        -:   80:
+        -:   81:        Returns:
+        -:   82:            0 - daca produsul exista deja
+        -:   83:            1 - daca produsul nu exista in lista
+        -:   84:    */
+    #####:   85:    stoc to_add = createElem(name,conc);
+    #####:   86:    int pos = searchElem(pharma, to_add.med.name);
+        -:   87:    
+    #####:   88:    if(pos == -1){
+    #####:   89:        pharma->cont[pharma->nrMeds++] = to_add;
+    #####:   90:        return 0;
+        -:   91:    }
+        -:   92:    else{
+    #####:   93:        ++pharma->cont[pos].quantity;
+    #####:   94:        return 1;
+        -:   95:    }
+        -:   96:
+        -:   97:
+        -:   98:}
+        -:   99:
+    #####:  100:void actualizare_NumeMedicament(farm* pharma, char* name, int pos ){
+        -:  101:/* Actualizeaza numele medicamentului de pozitia pos. 
+        -:  102:     Args:
+        -:  103:      - farm* pharma : adresa farmaciei in care se efectueaza modificare
+        -:  104:      - char* name   : numele nou al medicamentului
+        -:  105:      - int pos      : pozitia elementului care trebuie modificat
+        -:  106:
+        -:  107:    Returns:
+        -:  108:        None
+        -:  109:*/
+    #####:  110:    strcpy(pharma->cont[pos].med.name, name);
+        -:  111:
+    #####:  112:}
+        -:  113:
+    #####:  114:void actualizare_ConcMedicament(farm* pharma, float conc,int pos ){
+        -:  115:    /* Actualizeaza concentratia medicamentului de pozitia pos. 
+        -:  116:     Args:
+        -:  117:      - farm* pharma : adresa farmaciei in care se efectueaza modificare
+        -:  118:      - float conc   : concentratia noua a medicamentului
+        -:  119:      - int pos      : pozitia elementului care trebuie modificat
+        -:  120:
+        -:  121:    Returns:
+        -:  122:        None
+        -:  123:*/
+    #####:  124:    pharma->cont[pos].med.concentr = conc;
+        -:  125:
+    #####:  126:}
+        -:  127:
+        -:  128:
+    #####:  129:int modifElem(farm *pharma, char* name, char* modif_name, float modif_conc){
+        -:  130:    /*
+        -:  131:        Cauta si modifica medicamentul cu numele transmis in functie parametrii transmisi.
+        -:  132:
+        -:  133:        Args:
+        -:  134:            farm* pharma : adresa catre farmacia in care se efectueaza modificarea
+        -:  135:            char* name : numele medicamentului de modificat
+        -:  136:            char* modif_name: numele nou al medicamentului (pls default to "" pentru a il pastra la fel)
+        -:  137:            float modif_conc: concentratia noua a medicamentului (pls default to 0 pentru a o pastra la fel)
+        -:  138:
+        -:  139:        Returns:
+        -:  140:            -1 daca elementul cu numele dat nu exista in farmacie
+        -:  141:             1 daca modificarea a fost realizata cu succes 
+        -:  142:    */
+    #####:  143:    int pos = searchElem(pharma, name);
+    #####:  144:    if(pos == -1)
+    #####:  145:        return -1;
+        -:  146:    else{
+    #####:  147:        if(strlen(modif_name)>0){
+    #####:  148:            actualizare_NumeMedicament(pharma, modif_name, pos);
+        -:  149:        }
+    #####:  150:        if(modif_conc != 0){
+    #####:  151:            actualizare_ConcMedicament(pharma, modif_conc, pos);
+        -:  152:        }
+    #####:  153:        return 1;
+        -:  154:    }
+        -:  155:
+        -:  156:}
+        -:  157:
+    #####:  158:void stergeStoc_s(farm *pharma, char* name){
+        -:  159:    /*
+        -:  160:        Sterge stocul medicamentului cu numele transmis.
+        -:  161:
+        -:  162:        Args:
+        -:  163:            farm* pharma : adresa catre farmacie
+        -:  164:            char* name   : numele medicamentului al carui stoc trebuie sters
+        -:  165:
+        -:  166:    */
+    #####:  167:    int pos = searchElem(pharma, name);
+        -:  168:
+    #####:  169:    for(int i = pos;i<pharma->nrMeds-1;++i){
+    #####:  170:        stoc aux = pharma->cont[i];
+    #####:  171:        pharma->cont[i] = pharma->cont[i+1];
+    #####:  172:        pharma->cont[i+1] = aux; 
+        -:  173:    }
+    #####:  174:    pharma->nrMeds--;
+    #####:  175:}
+        -:  176:
+    #####:  177:farm ordonareProduse(farm* pharma, char* cond){
+        -:  178:    /*
+        -:  179:        Ordoneaza produsele dupa conditia transmisa.
+        -:  180:
+        -:  181:        Args:
+        -:  182:            farm* pharma : adresa catre farmacie
+        -:  183:            char* cond   : conditia de ordonare (nume/concentratie/stoc)
+        -:  184:        
+        -:  185:        Returns:
+        -:  186:            O farmacie noua, ordonata dupa criteriul dat.
+        -:  187:
+        -:  188:    */
+        -:  189:
+    #####:  190:    char* p = cond;
+        -:  191:    farm aux;
+    #####:  192:    aux.nrMeds = pharma->nrMeds;
+    #####:  193:    for(int i=0;i<aux.nrMeds;++i){
+    #####:  194:        aux.cont[i] = pharma->cont[i];
+        -:  195:    }
+    #####:  196:    for(;*p;++p){
+    #####:  197:        if(*p>='A' && *p<='Z'){
+    #####:  198:            *p='a'+*p-'A';
+        -:  199:        }
+        -:  200:    }
+        -:  201:
+    #####:  202:    if(strcmp(cond, "nume") == 0){
+    #####:  203:        qsort(aux.cont, aux.nrMeds, sizeof(stoc),cmpNume);
+    #####:  204:    }else if(strcmp(cond, "concentratie") == 0){
+    #####:  205:        qsort(aux.cont, aux.nrMeds, sizeof(stoc),cmpConcentr);
+    #####:  206:    }else if(strcmp(cond, "stoc")==0){
+    #####:  207:        qsort(aux.cont, aux.nrMeds, sizeof(stoc),cmpMarimeStoc);
+        -:  208:    }
+    #####:  209:    return aux;
+        -:  210:}
+        -:  211:
+    #####:  212:farm filtrareStoc(farm* pharma, int stocMin){
+        -:  213:    /*
+        -:  214:        Filtreaza farmacia dupa marimea stocului.
+        -:  215:
+        -:  216:        Args:
+        -:  217:            farm* pharma : adresa catre farmacia in care se efectueaza modificarea
+        -:  218:            int stocMin  : marimea minima a stocului dupa care se face filtrarea
+        -:  219:
+        -:  220:        Returns:
+        -:  221:            farm aux: o farmacie provenita din farmacia initiala cu elementele filtrate
+        -:  222:
+        -:  223:    */
+        -:  224:    farm aux;
+    #####:  225:    aux.nrMeds = 0;
+    #####:  226:    for(int i=0;i<pharma->nrMeds;++i){
+    #####:  227:        if(pharma->cont[i].quantity >= stocMin){
+    #####:  228:            aux.cont[aux.nrMeds++] = pharma->cont[i];
+        -:  229:        }
+        -:  230:    }
+    #####:  231:    return aux;
+        -:  232:}
+    #####:  233:farm filtrareNume(farm* pharma, char condNume){
+        -:  234:    /*
+        -:  235:        Filtreaza farmacia dupa prima litera din nume.
+        -:  236:
+        -:  237:        Args:
+        -:  238:            farm* pharma : adresa catre farmacia in care se efectueaza modificarea
+        -:  239:            char condNume  : litera dupa care se face filtrarea
+        -:  240:
+        -:  241:        Returns:
+        -:  242:            farm aux: o farmacie provenita din farmacia initiala cu elementele filtrate
+        -:  243:
+        -:  244:    */
+        -:  245:    
+        -:  246:
+        -:  247:    farm aux;
+    #####:  248:    aux.nrMeds = 0;
+    #####:  249:    for(int i=0;i<pharma->nrMeds;++i){
+    #####:  250:        if(pharma->cont[i].med.name[0] == condNume || pharma->cont[i].med.name[0] == condNume + 'a'-'A'){
+    #####:  251:            aux.cont[aux.nrMeds++] = pharma->cont[i];
+        -:  252:        }
+        -:  253:    }
+    #####:  254:    return aux;
+        -:  255:}
+        -:  256:

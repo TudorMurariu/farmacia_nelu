@@ -6,12 +6,32 @@
 int cmpNume(const void *a, const void *b){
     stoc* x = (stoc*)a;
     stoc* y = (stoc*)b;
+    /*if(strcmp(x->med.name,y->med.name)< 0 ){
+        x->next = y;
+    }
+    else if(strcmp(x->med.name,y->med.name) > 0){
+        stoc* aux = y->next;
+        y->next = x;
+        x->next = aux;
+
+    }*/
     return strcmp(x->med.name,y->med.name);
 }
 
 int cmpConcentr(const void* a, const void* b){
     stoc* x = (stoc*)a;
     stoc* y = (stoc*)b;
+    /*
+    if(strcmp(x->med.name,y->med.name)< 0 ){
+        x->next = y;
+    }
+    else if(strcmp(x->med.name,y->med.name) > 0){
+        stoc* aux = y->next;
+        y->next = x;
+        x->next = aux;
+
+    }*/
+
     return floor((x->med.concentr - y->med.concentr)*100);
 }
 
@@ -21,6 +41,49 @@ int cmpMarimeStoc(const void* a, const void* b){
     return (x->quantity - y->quantity);
 }
 
+void sorter(stoc* first, int size, int(*comparator)(const void*, const void*)){
+    
+    int comp = 0;
+    while(comp == 0){
+        comp = 1;
+        stoc* i= first;
+        stoc* j= first->next;
+        if(j == NULL || i==NULL){
+                return;
+        }
+        for(int h=0;h<size-1;++h){
+            if(i == NULL){
+                    break;
+                }
+            j = i->next;
+            for(int k=0;k<size-1;++k){
+                if(j == NULL){
+                    break;
+                }
+                if(comparator(i,j) > 0){
+                    produs aux = j->med;
+                    j->med = i->med;
+                    i->med = aux;
+
+                    int aux2 = j->quantity;
+                    j->quantity = i->quantity;
+                    i->quantity = aux2;
+
+                    int aux3 = j->uniqueCode;
+                    j->uniqueCode = i->uniqueCode;
+                    i->uniqueCode = aux3;
+
+                    comp = 0;
+                }
+                j = j->next;
+                
+            }
+            i = i->next;
+        }
+
+    }
+
+}
 
 stoc createElem(char *name, float conc){
     /*
@@ -58,16 +121,26 @@ int searchElem(farm* pharma, char* name){
             Pozitia elementului din lista
     */    
 
-    int n = pharma->nrMeds;
+   if(pharma->nrMeds>0){
+        int i = 0;
+        stoc* auxil = pharma->cont;
+        
+        while(strcmp(auxil->med.name, name) != 0){
+            auxil = auxil->next;
+            if(auxil == NULL){
+                i=-1;
+                break;
+            }else{
+                ++i;
+            }
+        }
+        
+        return i;
 
-    for(int i=0;i<n;++i){
-        if(strcmp(pharma->cont[i].med.name, name) == 0)
-            return i;
-    }
-
+   }
     return -1;
 }
-
+    
 int addElem(farm* pharma, char* name, float conc){
     /*
         Adauga un medicament nou sau incrementeaza cantitatea existenta deja
@@ -86,11 +159,12 @@ int addElem(farm* pharma, char* name, float conc){
     int pos = searchElem(pharma, to_add.med.name);
     
     if(pos == -1){
-        pharma->cont[pharma->nrMeds++] = to_add;
+        addStoc(pharma, &to_add);
         return 0;
     }
     else{
-        ++pharma->cont[pos].quantity;
+        
+        getPos(pharma, pos)->quantity++;
         return 1;
     }
 
@@ -107,7 +181,7 @@ void actualizare_NumeMedicament(farm* pharma, char* name, int pos ){
     Returns:
         None
 */
-    strcpy(pharma->cont[pos].med.name, name);
+    strcpy(getPos(pharma, pos)->med.name, name);
 
 }
 
@@ -121,7 +195,7 @@ void actualizare_ConcMedicament(farm* pharma, float conc,int pos ){
     Returns:
         None
 */
-    pharma->cont[pos].med.concentr = conc;
+    getPos(pharma, pos)->med.concentr = conc;
 
 }
 
@@ -141,6 +215,7 @@ int modifElem(farm *pharma, char* name, char* modif_name, float modif_conc){
              1 daca modificarea a fost realizata cu succes 
     */
     int pos = searchElem(pharma, name);
+    
     if(pos == -1)
         return -1;
     else{
@@ -166,15 +241,10 @@ void stergeStoc_s(farm *pharma, char* name){
     */
     int pos = searchElem(pharma, name);
 
-    for(int i = pos;i<pharma->nrMeds-1;++i){
-        stoc aux = pharma->cont[i];
-        pharma->cont[i] = pharma->cont[i+1];
-        pharma->cont[i+1] = aux; 
-    }
-    pharma->nrMeds--;
+    removeStoc(pharma, pos);
 }
 
-farm ordonareProduse(farm* pharma, char* cond){
+void ordonareProduse(farm* pharma, char* cond, farm* aux){
     /*
         Ordoneaza produsele dupa conditia transmisa.
 
@@ -188,10 +258,8 @@ farm ordonareProduse(farm* pharma, char* cond){
     */
 
     char* p = cond;
-    farm aux;
-    aux.nrMeds = pharma->nrMeds;
-    for(int i=0;i<aux.nrMeds;++i){
-        aux.cont[i] = pharma->cont[i];
+    for(int i=0;i<pharma->nrMeds;++i){
+        addStoc(aux, getPos(pharma, i));
     }
     for(;*p;++p){
         if(*p>='A' && *p<='Z'){
@@ -200,16 +268,15 @@ farm ordonareProduse(farm* pharma, char* cond){
     }
 
     if(strcmp(cond, "nume") == 0){
-        qsort(aux.cont, aux.nrMeds, sizeof(stoc),cmpNume);
+        sorter(aux->cont, aux->nrMeds,cmpNume);
     }else if(strcmp(cond, "concentratie") == 0){
-        qsort(aux.cont, aux.nrMeds, sizeof(stoc),cmpConcentr);
+        sorter(aux->cont, aux->nrMeds,cmpConcentr);
     }else if(strcmp(cond, "stoc")==0){
-        qsort(aux.cont, aux.nrMeds, sizeof(stoc),cmpMarimeStoc);
+        sorter(aux->cont, aux->nrMeds,cmpMarimeStoc);
     }
-    return aux;
 }
 
-farm filtrareStoc(farm* pharma, int stocMin){
+void filtrareStoc(farm* pharma, int stocMin, farm* aux){
     /*
         Filtreaza farmacia dupa marimea stocului.
 
@@ -221,16 +288,13 @@ farm filtrareStoc(farm* pharma, int stocMin){
             farm aux: o farmacie provenita din farmacia initiala cu elementele filtrate
 
     */
-    farm aux;
-    aux.nrMeds = 0;
     for(int i=0;i<pharma->nrMeds;++i){
-        if(pharma->cont[i].quantity >= stocMin){
-            aux.cont[aux.nrMeds++] = pharma->cont[i];
+        if(getPos(pharma, i)->quantity >= stocMin){
+            addStoc(aux, getPos(pharma, i));
         }
     }
-    return aux;
 }
-farm filtrareNume(farm* pharma, char condNume){
+void filtrareNume(farm* pharma, char condNume, farm* aux){
     /*
         Filtreaza farmacia dupa prima litera din nume.
 
@@ -240,16 +304,14 @@ farm filtrareNume(farm* pharma, char condNume){
 
         Returns:
             farm aux: o farmacie provenita din farmacia initiala cu elementele filtrate
-
     */
     
-    farm aux;
-    aux.nrMeds = 0;
+
     for(int i=0;i<pharma->nrMeds;++i){
-        if(pharma->cont[i].med.name[0] == condNume){
-            aux.cont[aux.nrMeds++] = pharma->cont[i];
+        if(getPos(pharma, i)->med.name[0] == condNume || getPos(pharma, i)->med.name[0] == condNume + 'a'-'A'){
+            addStoc(aux, getPos(pharma, i));
         }
     }
-    return aux;
+
 }
 

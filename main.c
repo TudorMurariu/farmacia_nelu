@@ -1,6 +1,6 @@
-#include "service.c"
 #include <stdio.h>
 #include <ctype.h>
+#include "test_service.c"
 void adaugareProdus(farm* pharma){
 
     printf("ADAUGARE PRODUS\n");
@@ -68,12 +68,13 @@ void modifProdus(farm* pharma){
 
 void afisSimpla(farm* aux){
     for(int i=0;i<aux->nrMeds;++i){
+        stoc* actual = getPos(aux,i);
         printf("*****************************************\n");
-        printf("MEDICAMENTUL %d\n", aux->cont[i].uniqueCode);
+        printf("MEDICAMENTUL %d\n", actual->uniqueCode);
         printf("--------------------\n");
-        printf("Nume: %s\n", aux->cont[i].med.name);
-        printf("Concentratie: %f \n",aux->cont[i].med.concentr);
-        printf("Cantitate: %d\n", aux->cont[i].quantity);
+        printf("Nume: %s\n", actual->med.name);
+        printf("Concentratie: %f \n",actual->med.concentr);
+        printf("Cantitate: %d\n", actual->quantity);
     }
 
 
@@ -83,8 +84,10 @@ void afisProduse(farm* pharma){
     char cond[100];
     printf("Introdu conditia de afisare (nume/concentratie/stoc): \n");
     scanf("%s", cond);
-    farm aux = ordonareProduse(pharma, cond);
+    farm aux = new_farm();
+    ordonareProduse(pharma, cond, &aux);
     afisSimpla(&aux);
+    destroyFarm(&aux);
 }
 
 
@@ -115,7 +118,7 @@ void filtrareMedic(farm* pharma){
 
     scanf("%d", &cond);
 
-    farm aux;
+    farm aux = new_farm();
     int condStoc;
     char condNume;
     switch (cond)
@@ -123,25 +126,27 @@ void filtrareMedic(farm* pharma){
         case 1:
             printf("Introdu marimea minima a stocului: \n");
             scanf("%d", &condStoc);
-            aux = filtrareStoc(pharma, condStoc);
+            filtrareStoc(pharma, condStoc, &aux);
             break;
     
         case 2:
             printf("Introdu litera cautata : \n");
             scanf("%c", &condNume);
-            aux = filtrareNume(pharma, condNume);
+            filtrareNume(pharma, condNume, &aux);
             break;
     }
     afisSimpla(&aux);
+    destroyFarm(&aux);
+
 }
 
 int main(int argv, char** argc){
-
-    farm farmacia_nelu;
-    farmacia_nelu.nrMeds = 0;
-    char comenzi[5][50]={"ADAUGARE\n", "MODIFICARE\n","AFISARE\n", "STERGERE\n", "FILTRARE\n"};
+    run_tests();
+    
+    farm farmacia_nelu = new_farm();
+    char comenzi[6][50]={"ADAUGARE\n", "MODIFICARE\n","AFISARE\n", "STERGERE\n", "FILTRARE\n", "EXIT\n"};
     while(1){
-        for(int i=0;i<5;++i){
+        for(int i=0;i<6;++i){
             printf("%d.%s",i+1, comenzi[i]);
         }
         printf("Alege comanda: ");
@@ -167,6 +172,10 @@ int main(int argv, char** argc){
             
             case(4):
                 filtrareMedic(&farmacia_nelu);
+                break;
+            case(5):
+                destroyFarm(&farmacia_nelu);
+                return 0;
                 break;
 
         }

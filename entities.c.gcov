@@ -1,0 +1,32 @@
+        -:    0:Source:entities.c
+        -:    0:Graph:./main.gcno
+        -:    0:Data:-
+        -:    0:Runs:0
+        -:    1:#include "produs.c"
+        -:    2:
+        -:    3:typedef struct stocuri{
+        -:    4:    produs med;
+        -:    5:    int uniqueCode;
+        -:    6:    int quantity;
+        -:    7:}stoc;
+        -:    8:
+        -:    9:typedef struct farmacii{
+        -:   10:    stoc cont[100];
+        -:   11:    int nrMeds;
+        -:   12:}farm;
+        -:   13:
+        -:   14:
+    #####:   15:int compareStocs(stoc* prod1, stoc* prod2){
+        -:   16:
+    #####:   17:    if(prod1->med.concentr != prod2->med.concentr)
+    #####:   18:        return 0;
+    #####:   19:    if(strcmp(prod1->med.name, prod2->med.name) != 0)
+    #####:   20:        return 0;
+    #####:   21:    if(prod1->quantity != prod2->quantity)
+    #####:   22:        return 0;
+        -:   23:    
+        -:   24:    
+    #####:   25:    return 1;
+        -:   26:
+        -:   27:
+        -:   28:}
