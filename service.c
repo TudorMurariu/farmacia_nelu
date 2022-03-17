@@ -260,7 +260,7 @@ vectorDinamic* filtrareStoc(vectorDinamic* pharma, int stocMin){
     distrugeIT(i);
     return aux;
 }
-vectorDinamic* filtrareNume(vectorDinamic* pharma, char condNume){
+vectorDinamic* filtrareNume(vectorDinamic* pharma, char* condNume){
     /*
         Filtreaza farmacia dupa prima litera din nume.
 
@@ -276,7 +276,7 @@ vectorDinamic* filtrareNume(vectorDinamic* pharma, char condNume){
     vectorDinamic* aux = creeazaVectDin(100);
     Iterator* i = creaazaIterator(pharma);
     for(prim(i);valid(i);urmator(i)){
-        if(elementIT(i)->med.name[0] == condNume){
+        if(elementIT(i)->med.name[0] == condNume[0]){
             pushBack(aux, *elementIT(i));
         }
     }

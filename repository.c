@@ -3,6 +3,7 @@
 vectorDinamic* creeazaVectDin(int cp){
     /*
         Creeaza un vector dinamic de dimensiune cp.
+
         Args:
             int cp - capacitatea vectorului
 

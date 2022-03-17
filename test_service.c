@@ -20,7 +20,7 @@ void test_createElem(){
 }
 
 void test_addElem(){
-	vectorDinamic* pharmacy = creeazaVectDin(100);
+	vectorDinamic* pharmacy = creeazaVectDin(2);
 
 	addElem(pharmacy, "Bixtonim",20.01);
 
@@ -35,7 +35,7 @@ void test_addElem(){
 }
 
 void test_searchElem(){
-	vectorDinamic* pharmacy = creeazaVectDin(100);
+	vectorDinamic* pharmacy = creeazaVectDin(2);
 	addElem(pharmacy, "Bixtonim",20.01);
 	addElem(pharmacy, "Paracetamol",18.2);
 	addElem(pharmacy, "Aspacartim",50);
@@ -49,7 +49,7 @@ void test_searchElem(){
 }
 
 void test_modifElem(){
-	vectorDinamic* pharmacy = creeazaVectDin(100);
+	vectorDinamic* pharmacy = creeazaVectDin(2);
 	
 	addElem(pharmacy, "Bixtonim",20.01);
 	addElem(pharmacy, "Paracetamol",18.2);
@@ -67,7 +67,7 @@ void test_modifElem(){
 }
 
 void test_stergeStoc(){
-	vectorDinamic* pharma = creeazaVectDin(100);
+	vectorDinamic* pharma = creeazaVectDin(2);
 
 	addElem(pharma, "Theraflu", 21.5);
 	addElem(pharma, "Theraflu", 21.5);
@@ -81,7 +81,7 @@ void test_stergeStoc(){
 }
 
 void test_ordonareProduse(){
-	vectorDinamic* pharma = creeazaVectDin(100);
+	vectorDinamic* pharma = creeazaVectDin(2);
 
 	addElem(pharma, "Theraflu", 19.5);
 	addElem(pharma, "Paracetamol", 44);
@@ -114,7 +114,7 @@ void test_ordonareProduse(){
 }
 
 void test_filtrareStoc(){
-	vectorDinamic* pharma = creeazaVectDin(100);
+	vectorDinamic* pharma = creeazaVectDin(2);
 
 	addElem(pharma, "Theraflu", 19.5);
 	addElem(pharma, "Paracetamol", 44);

@@ -26,4 +26,4 @@ vectorDinamic* ordonareProduse(vectorDinamic* pharma, char* cond);
 
 vectorDinamic* filtrareStoc(vectorDinamic* pharma, int stocMin);
 
-vectorDinamic* filtrareNume(vectorDinamic* pharma, char condNume);
+vectorDinamic* filtrareNume(vectorDinamic* pharma, char* condNume);

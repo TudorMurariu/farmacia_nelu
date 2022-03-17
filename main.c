@@ -122,7 +122,7 @@ void filtrareMedic(vectorDinamic* pharma){
 
     vectorDinamic* aux;
     int condStoc;
-    char condNume;
+    char condNume[50];
     switch (cond)
     {
         case 1:
@@ -132,8 +132,8 @@ void filtrareMedic(vectorDinamic* pharma){
             break;
     
         case 2:
-            printf("Introdu litera cautata : \n");
-            scanf("%c", &condNume);
+            printf("Introdu litera cautata :");
+            scanf("%s", condNume);
             aux = filtrareNume(pharma, condNume);
             break;
     }
