@@ -1,7 +1,15 @@
 #include <stdlib.h>
 #include "repository.h"
 vectorDinamic* creeazaVectDin(int cp){
-    /*Creeaza un vector dinamic de dimensiune cp*/
+    /*
+        Creeaza un vector dinamic de dimensiune cp.
+        Args:
+            int cp - capacitatea vectorului
+
+        Returns:
+            vectorDinamic* p - pointer catre vectorulDinamic
+    
+    */
     vectorDinamic *v = (vectorDinamic*)malloc(sizeof(vectorDinamic));
 
     v->cp = cp;
@@ -12,6 +20,16 @@ vectorDinamic* creeazaVectDin(int cp){
 }
 
 void removeElem(vectorDinamic* v, int pos){
+    /*
+        Sterge elementul de pe pozitia pos din vectorul v.
+
+        Args:
+            vectorDinamic* v - pointer catre vectorul dinamic
+            int pos - pozitia din vector
+
+        Returns:
+            None
+    */
     if(pos>=0 && pos<v->n){
         for(int i=pos;i<v->n-1;++i){
             v->e[i] = v->e[i+1];
@@ -22,12 +40,28 @@ void removeElem(vectorDinamic* v, int pos){
 }
 
 void distruge(vectorDinamic* v){
+    /*
+        Distruge vectorul dinamic *v.
+
+        Args:
+            vectorDinamic* v - pointer catre vectorul dinamic
+
+        Returns:
+            None
+    */
+
     free(v->e);
     free(v);
 }
 
 void redim(vectorDinamic* v){
-    /*Dubleaza dimensiunea vectorului dinamic*/
+    /*
+    Dubleaza capacitatea vectorului dinamic.
+        Args:
+            vectorDinamic* v - pointer catre vectorul dinamic.
+    */
+
+
     stoc* new_list = (stoc*)malloc(v->cp * 2 * sizeof(stoc));
     
     for(int i=0;i<v->n;++i){
@@ -44,10 +78,31 @@ void redim(vectorDinamic* v){
 }
 
 int dim(vectorDinamic* v){
+    /*
+        Returneaza numarul de elemente din vectorul dinamic.
+
+        Returns:
+            int dim 
+    
+    */
+
+
     return v->n;
 }
 
 stoc* element(vectorDinamic* v, int pos){
+    /*
+        Returneaza pointer catre elementul de pe pozitia pos.
+
+        Args:
+            vectorDinamic* v - vectorul dinamic
+            int pos - pozitia elementului cautat
+
+        Returns:
+            stoc* - pointer catre element
+    */
+
+
     if(pos>=0 && pos < v->n)
         return &v->e[pos];
     else return NULL;

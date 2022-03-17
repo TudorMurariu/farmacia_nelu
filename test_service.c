@@ -1,8 +1,9 @@
-#include "service.c"
+#include "service.h"
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 void test_createElem(){
 	stoc medicament;
@@ -147,8 +148,8 @@ void run_tests(){
 	test_filtrareStoc();
 }
 
-/*int main(){
+int main(){
 	run_tests();
 
 	return 0;
-}*/
+}

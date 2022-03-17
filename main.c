@@ -142,7 +142,7 @@ void filtrareMedic(vectorDinamic* pharma){
 }
 
 int main(int argv, char** argc){
-
+    
     vectorDinamic* farmacia_nelu = creeazaVectDin(100);
     char comenzi[6][50]={"ADAUGARE\n", "MODIFICARE\n","AFISARE\n", "STERGERE\n", "FILTRARE\n", "OPRIRE\n"};
     while(1){

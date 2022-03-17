@@ -1,4 +1,5 @@
 #include "entities.h"
+
 typedef struct{
     int cp;//capacitate
 
