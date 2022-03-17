@@ -19,111 +19,122 @@ void test_createElem(){
 }
 
 void test_addElem(){
-	farm pharmacy;
-	pharmacy.nrMeds = 0;
-	addElem(&pharmacy, "Bixtonim",20.01);
+	vectorDinamic* pharmacy = creeazaVectDin(100);
 
-	assert(pharmacy.nrMeds == 1);
+	addElem(pharmacy, "Bixtonim",20.01);
+
+	assert(dim(pharmacy)== 1);
 	stoc test =  createElem("Bixtonim",20.01);
-	assert(compareStocs(&pharmacy.cont[0],&test)==1);
+	assert(compareStocs(element(pharmacy, 0),&test)==1);
 
-	addElem(&pharmacy, "Bixtonim", 20.01);
-	assert(pharmacy.cont[0].quantity==2);
+	addElem(pharmacy, "Bixtonim", 20.01);
+	assert(element(pharmacy, 0)->quantity == 2 );
 
+	distruge(pharmacy);
 }
 
 void test_searchElem(){
-	farm pharmacy;
-	pharmacy.nrMeds = 0;
-	addElem(&pharmacy, "Bixtonim",20.01);
-	addElem(&pharmacy, "Paracetamol",18.2);
-	addElem(&pharmacy, "Aspacartim",50);
-	produs medic;
-	medic.concentr = 50;
-	strcpy(medic.name , "Aspacartim");
+	vectorDinamic* pharmacy = creeazaVectDin(100);
+	addElem(pharmacy, "Bixtonim",20.01);
+	addElem(pharmacy, "Paracetamol",18.2);
+	addElem(pharmacy, "Aspacartim",50);
 
-	assert(searchElem(&pharmacy,medic.name) == 2);
+	char name[] = "Aspacartim";
+
+	assert(searchElem(pharmacy,name) == 2);
+
+	distruge(pharmacy);
 
 }
 
 void test_modifElem(){
-	farm pharmacy;
-	pharmacy.nrMeds = 0;
-	addElem(&pharmacy, "Bixtonim",20.01);
-	addElem(&pharmacy, "Paracetamol",18.2);
-	addElem(&pharmacy, "Aspacartim",50);
+	vectorDinamic* pharmacy = creeazaVectDin(100);
+	
+	addElem(pharmacy, "Bixtonim",20.01);
+	addElem(pharmacy, "Paracetamol",18.2);
+	addElem(pharmacy, "Aspacartim",50);
 
-	modifElem(&pharmacy, "Aspacartim", "Theraflu", 0);
+	modifElem(pharmacy, "Aspacartim", "Theraflu", 0);
 
-	assert(strcmp(pharmacy.cont[2].med.name, "Theraflu")==0);
+	assert(strcmp(element(pharmacy, 2)->med.name, "Theraflu")==0);
 
-	modifElem(&pharmacy, "Paracetamol", "", 25.07);
+	modifElem(pharmacy, "Paracetamol", "", 25.07);
 
-	assert(floor(pharmacy.cont[1].med.concentr*100) == 2507);
+	assert(floor(element(pharmacy, 1)->med.concentr*100) == 2507);
+
+	distruge(pharmacy);
 }
 
 void test_stergeStoc(){
-	farm pharma;
-	pharma.nrMeds = 0;
-	addElem(&pharma, "Theraflu", 21.5);
-	addElem(&pharma, "Theraflu", 21.5);
-	addElem(&pharma, "Theraflu", 21.5);
-	addElem(&pharma, "Theraflu", 21.5);
+	vectorDinamic* pharma = creeazaVectDin(100);
 
-	stergeStoc_s(&pharma, "Theraflu");
-	assert(pharma.nrMeds == 0);
+	addElem(pharma, "Theraflu", 21.5);
+	addElem(pharma, "Theraflu", 21.5);
+	addElem(pharma, "Theraflu", 21.5);
+	addElem(pharma, "Theraflu", 21.5);
+
+	stergeStoc_s(pharma, "Theraflu");
+	assert(dim(pharma) == 0);
+
+	distruge(pharma);
 }
 
 void test_ordonareProduse(){
-	farm pharma;
-	pharma.nrMeds = 0;
-	addElem(&pharma, "Theraflu", 19.5);
-	addElem(&pharma, "Paracetamol", 44);
-	addElem(&pharma, "Paracetamol", 44);
-	addElem(&pharma, "Paracetamol", 44);
+	vectorDinamic* pharma = creeazaVectDin(100);
+
+	addElem(pharma, "Theraflu", 19.5);
+	addElem(pharma, "Paracetamol", 44);
+	addElem(pharma, "Paracetamol", 44);
+	addElem(pharma, "Paracetamol", 44);
+
+	addElem(pharma, "Gripovit", 65);
+	addElem(pharma, "Gripovit", 65);
+	addElem(pharma, "Abrolen", 21.5);
+	addElem(pharma, "Abrolen", 21.5);
+	addElem(pharma, "Abrolen", 21.5);
+
+
+	vectorDinamic* aux = ordonareProduse(pharma, "nume");
+	assert(strcmp(element(aux, 0)->med.name, "Abrolen") == 0);
+	//printf("%s", element(aux, 0)->med.name);
+	distruge(aux);
 	
-	addElem(&pharma, "Gripovit", 65);
-	addElem(&pharma, "Gripovit", 65);
-
-	addElem(&pharma, "Abrolen", 21.5);
-	addElem(&pharma, "Abrolen", 21.5);
-	addElem(&pharma, "Abrolen", 21.5);
+	aux = ordonareProduse(pharma, "concentratie");
+	assert(strcmp(element(aux, 0)->med.name, "Theraflu") == 0);
+	distruge(aux);
 
 
-	farm aux = ordonareProduse(&pharma, "nume");
-	assert(strcmp(aux.cont[0].med.name, "Abrolen") == 0);
-
-	aux = ordonareProduse(&pharma, "concentratie");
-	assert(strcmp(aux.cont[0].med.name, "Theraflu") == 0);
-
-	aux = ordonareProduse(&pharma, "stoc");
-	assert(strcmp(aux.cont[0].med.name, "Theraflu") == 0);
+	aux = ordonareProduse(pharma, "stoc");
+	assert(strcmp(element(aux, 0)->med.name, "Theraflu") == 0);
+	distruge(aux);
 
 
-
+	distruge(pharma);
 }
 
 void test_filtrareStoc(){
-	farm pharma;
-	pharma.nrMeds = 0;
-	addElem(&pharma, "Theraflu", 19.5);
-	addElem(&pharma, "Paracetamol", 44);
-	addElem(&pharma, "Paracetamol", 44);
-	addElem(&pharma, "Paracetamol", 44);
+	vectorDinamic* pharma = creeazaVectDin(100);
+
+	addElem(pharma, "Theraflu", 19.5);
+	addElem(pharma, "Paracetamol", 44);
+	addElem(pharma, "Paracetamol", 44);
+	addElem(pharma, "Paracetamol", 44);
+
+	addElem(pharma, "Gripovit", 65);
+	addElem(pharma, "Gripovit", 65);
+	addElem(pharma, "Abrolen", 21.5);
+	addElem(pharma, "Abrolen", 21.5);
+	addElem(pharma, "Abrolen", 21.5);
+
+	vectorDinamic* aux = filtrareStoc(pharma, 2);
+	assert(dim(aux) == 3);
+	distruge(aux);
+
+	aux = filtrareNume(pharma, 'A');
+	assert(dim(aux) == 1);
 	
-	addElem(&pharma, "Gripovit", 65);
-	addElem(&pharma, "Gripovit", 65);
-
-	addElem(&pharma, "Abrolen", 21.5);
-	addElem(&pharma, "Abrolen", 21.5);
-	addElem(&pharma, "Abrolen", 21.5);
-
-	farm aux = filtrareStoc(&pharma, 2);
-	assert(aux.nrMeds == 3);
-
-	aux = filtrareNume(&pharma, 'A');
-	assert(aux.nrMeds == 1);
-
+	distruge(aux);
+	distruge(pharma);
 }
 
 void run_tests(){
@@ -135,3 +146,9 @@ void run_tests(){
 	test_ordonareProduse();
 	test_filtrareStoc();
 }
+
+/*int main(){
+	run_tests();
+
+	return 0;
+}*/

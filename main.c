@@ -1,7 +1,7 @@
-#include "service.c"
+#include "service.h"
 #include <stdio.h>
 #include <ctype.h>
-void adaugareProdus(farm* pharma){
+void adaugareProdus(vectorDinamic* pharma){
 
     printf("ADAUGARE PRODUS\n");
     printf("Introduceti numele medicamentului: ");
@@ -27,7 +27,7 @@ void adaugareProdus(farm* pharma){
     }
 }
 
-void modifProdus(farm* pharma){
+void modifProdus(vectorDinamic* pharma){
     char nume[100];
     char nume_modif[100];
     float concentr;
@@ -61,34 +61,39 @@ void modifProdus(farm* pharma){
     printf("Introduceti concentratia noua a medicamentului (sau 0 daca nu este cazul): ");
     scanf("%f", &concentr);
 
-    modifElem(pharma, nume,nume_modif,concentr);
-    printf("Medicament actualizat!");
-    
+    if(modifElem(pharma, nume,nume_modif,concentr) == 1)
+        printf("Medicament actualizat!");
+    else printf("A aparut o eroare.");
 }
 
-void afisSimpla(farm* aux){
-    for(int i=0;i<aux->nrMeds;++i){
+void afisSimpla(vectorDinamic* aux){
+    Iterator* i = creaazaIterator(aux);
+
+    for(prim(i);valid(i);urmator(i)){
         printf("*****************************************\n");
-        printf("MEDICAMENTUL %d\n", aux->cont[i].uniqueCode);
+        printf("MEDICAMENTUL %d\n", elementIT(i)->uniqueCode);
         printf("--------------------\n");
-        printf("Nume: %s\n", aux->cont[i].med.name);
-        printf("Concentratie: %f \n",aux->cont[i].med.concentr);
-        printf("Cantitate: %d\n", aux->cont[i].quantity);
+        printf("Nume: %s\n", elementIT(i)->med.name);
+        printf("Concentratie: %f \n",elementIT(i)->med.concentr);
+        printf("Cantitate: %d\n", elementIT(i)->quantity);
     }
 
+    distrugeIT(i);
+
 
 }
 
-void afisProduse(farm* pharma){
+void afisProduse(vectorDinamic* pharma){
     char cond[100];
     printf("Introdu conditia de afisare (nume/concentratie/stoc): \n");
     scanf("%s", cond);
-    farm aux = ordonareProduse(pharma, cond);
-    afisSimpla(&aux);
+    vectorDinamic* aux = ordonareProduse(pharma, cond);
+    afisSimpla(aux);
+    distruge(aux);
 }
 
 
-void stergeStoc(farm* pharma){
+void stergeStoc(vectorDinamic* pharma){
     char nume[100];
     int value = -1;
     do{
@@ -106,7 +111,7 @@ void stergeStoc(farm* pharma){
     stergeStoc_s(pharma, nume);
 }
 
-void filtrareMedic(farm* pharma){
+void filtrareMedic(vectorDinamic* pharma){
     int cond;
     printf("FILTRARE\n\n");
     printf("1.Filtrare după stoc.\n");
@@ -115,7 +120,7 @@ void filtrareMedic(farm* pharma){
 
     scanf("%d", &cond);
 
-    farm aux;
+    vectorDinamic* aux;
     int condStoc;
     char condNume;
     switch (cond)
@@ -132,16 +137,16 @@ void filtrareMedic(farm* pharma){
             aux = filtrareNume(pharma, condNume);
             break;
     }
-    afisSimpla(&aux);
+    afisSimpla(aux);
+    distruge(aux);
 }
 
 int main(int argv, char** argc){
 
-    farm farmacia_nelu;
-    farmacia_nelu.nrMeds = 0;
-    char comenzi[5][50]={"ADAUGARE\n", "MODIFICARE\n","AFISARE\n", "STERGERE\n", "FILTRARE\n"};
+    vectorDinamic* farmacia_nelu = creeazaVectDin(100);
+    char comenzi[6][50]={"ADAUGARE\n", "MODIFICARE\n","AFISARE\n", "STERGERE\n", "FILTRARE\n", "OPRIRE\n"};
     while(1){
-        for(int i=0;i<5;++i){
+        for(int i=0;i<6;++i){
             printf("%d.%s",i+1, comenzi[i]);
         }
         printf("Alege comanda: ");
@@ -150,24 +155,28 @@ int main(int argv, char** argc){
         switch(--com){
 
             case(0):
-                adaugareProdus(&farmacia_nelu);
+                adaugareProdus(farmacia_nelu);
                 break;
             
             case(1):
-                modifProdus(&farmacia_nelu);
+                modifProdus(farmacia_nelu);
                 break;
             
             case(2):
-                afisProduse(&farmacia_nelu);
+                afisProduse(farmacia_nelu);
                 break;
             
             case(3):
-                stergeStoc(&farmacia_nelu);
+                stergeStoc(farmacia_nelu);
                 break;
             
             case(4):
-                filtrareMedic(&farmacia_nelu);
+                filtrareMedic(farmacia_nelu);
                 break;
+
+            case(5):
+                distruge(farmacia_nelu);
+                return 0;
 
         }
         printf("\n");

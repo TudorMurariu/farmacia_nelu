@@ -1,4 +1,10 @@
-#include "produs.c"
+typedef struct produse {
+
+    //struct pentru definirea entitatii de medicament 
+    //pentru farmacie   
+    char name[100];
+    float concentr;
+}produs;
 
 typedef struct stocuri{
     produs med;
@@ -6,10 +12,7 @@ typedef struct stocuri{
     int quantity;
 }stoc;
 
-typedef struct farmacii{
-    stoc cont[100];
-    int nrMeds;
-}farm;
+
 
 
 int compareStocs(stoc* prod1, stoc* prod2){
@@ -26,3 +29,14 @@ int compareStocs(stoc* prod1, stoc* prod2){
 
 
 }
+
+stoc NULL_STOC(){
+    stoc null_stoc;
+    null_stoc.med.concentr = 0;
+    null_stoc.med.name[0] = 0;
+    null_stoc.quantity = 0;
+    null_stoc.uniqueCode = 0;
+
+    return null_stoc;
+}
+

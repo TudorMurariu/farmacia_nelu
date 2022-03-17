@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
-#include "entities.c"
+#include "repository.h"
 #include <math.h>
+
 
 int cmpNume(const void *a, const void *b){
     stoc* x = (stoc*)a;
@@ -21,7 +22,31 @@ int cmpMarimeStoc(const void* a, const void* b){
     return (x->quantity - y->quantity);
 }
 
+void bubble_sort(vectorDinamic* v, int (*comparator)(const void* a, const void* b))
+{
+    int compared = 1;
 
+    while(compared == 1){
+
+        Iterator *i = creaazaIterator(v);
+        Iterator *j = creaazaIterator(v);
+        compared = 0;
+
+        for(prim(i);valid(i);urmator(i)){
+            for(j->curent = i->curent+1;valid(j);urmator(j)){
+                if(comparator(elementIT(i), elementIT(j)) > 0){
+                    stoc aux = *elementIT(i);
+                    *elementIT(i) = *elementIT(j);
+                    *elementIT(j) = aux;
+                    compared = 1; 
+                }
+            }
+        }
+        distrugeIT(i);
+        distrugeIT(j);
+        
+    }
+}
 stoc createElem(char *name, float conc){
     /*
         Creaza un element de tipul stoc nou
@@ -44,7 +69,7 @@ stoc createElem(char *name, float conc){
     return nMed;
 }
 
-int searchElem(farm* pharma, char* name){
+int searchElem(vectorDinamic* pharma, char* name){
     /*
         Cauta elementul transmis in lista.
 
@@ -58,23 +83,29 @@ int searchElem(farm* pharma, char* name){
             Pozitia elementului din lista
     */    
 
-    int n = pharma->nrMeds;
+    
 
-    for(int i=0;i<n;++i){
-        if(strcmp(pharma->cont[i].med.name, name) == 0)
-            return i;
+    Iterator* i = creaazaIterator(pharma);
+
+    for(prim(i); valid(i); urmator(i)){
+        if(strcmp(elementIT(i)->med.name, name) == 0){
+            int returner = i->curent;
+            distrugeIT(i);
+            return returner;
+        }
     }
 
+    distrugeIT(i);
     return -1;
 }
 
-int addElem(farm* pharma, char* name, float conc){
+int addElem(vectorDinamic* pharma, char* name, float conc){
     /*
         Adauga un medicament nou sau incrementeaza cantitatea existenta deja
         pe stoc.
 
         Args:
-            farm* pharma - stocul in care se adauga
+            vectorDinamic* pharma - farmacia in care se adauga
             char* name - pointer catre numele medicamentului
             float conc - concetratia medicamentului
 
@@ -86,47 +117,47 @@ int addElem(farm* pharma, char* name, float conc){
     int pos = searchElem(pharma, to_add.med.name);
     
     if(pos == -1){
-        pharma->cont[pharma->nrMeds++] = to_add;
+        pushBack(pharma, to_add);
         return 0;
     }
     else{
-        ++pharma->cont[pos].quantity;
+        ++element(pharma, pos)->quantity;
         return 1;
     }
 
 
 }
 
-void actualizare_NumeMedicament(farm* pharma, char* name, int pos ){
+void actualizare_NumeMedicament(vectorDinamic* pharma, char* name, int pos ){
 /* Actualizeaza numele medicamentului de pozitia pos. 
      Args:
-      - farm* pharma : adresa farmaciei in care se efectueaza modificare
+      - vectorDinamic* pharma : adresa farmaciei in care se efectueaza modificare
       - char* name   : numele nou al medicamentului
       - int pos      : pozitia elementului care trebuie modificat
 
     Returns:
         None
 */
-    strcpy(pharma->cont[pos].med.name, name);
+    strcpy(element(pharma, pos)->med.name, name);
 
 }
 
-void actualizare_ConcMedicament(farm* pharma, float conc,int pos ){
+void actualizare_ConcMedicament(vectorDinamic* pharma, float conc,int pos ){
     /* Actualizeaza concentratia medicamentului de pozitia pos. 
      Args:
-      - farm* pharma : adresa farmaciei in care se efectueaza modificare
+      - vectorDinamic* pharma : adresa farmaciei in care se efectueaza modificare
       - float conc   : concentratia noua a medicamentului
       - int pos      : pozitia elementului care trebuie modificat
 
     Returns:
         None
 */
-    pharma->cont[pos].med.concentr = conc;
+    element(pharma, pos)->med.concentr = conc;
 
 }
 
 
-int modifElem(farm *pharma, char* name, char* modif_name, float modif_conc){
+int modifElem(vectorDinamic *pharma, char* name, char* modif_name, float modif_conc){
     /*
         Cauta si modifica medicamentul cu numele transmis in functie parametrii transmisi.
 
@@ -155,31 +186,26 @@ int modifElem(farm *pharma, char* name, char* modif_name, float modif_conc){
 
 }
 
-void stergeStoc_s(farm *pharma, char* name){
+void stergeStoc_s(vectorDinamic *pharma, char* name){
     /*
         Sterge stocul medicamentului cu numele transmis.
 
         Args:
-            farm* pharma : adresa catre farmacie
+            vectorDinamic* pharma : adresa catre farmacie
             char* name   : numele medicamentului al carui stoc trebuie sters
 
     */
     int pos = searchElem(pharma, name);
-
-    for(int i = pos;i<pharma->nrMeds-1;++i){
-        stoc aux = pharma->cont[i];
-        pharma->cont[i] = pharma->cont[i+1];
-        pharma->cont[i+1] = aux; 
-    }
-    pharma->nrMeds--;
+    
+    removeElem(pharma, pos);
 }
 
-farm ordonareProduse(farm* pharma, char* cond){
+vectorDinamic* ordonareProduse(vectorDinamic* pharma, char* cond){
     /*
         Ordoneaza produsele dupa conditia transmisa.
 
         Args:
-            farm* pharma : adresa catre farmacie
+            vectorDinamic* pharma : adresa catre farmacie
             char* cond   : conditia de ordonare (nume/concentratie/stoc)
         
         Returns:
@@ -188,11 +214,13 @@ farm ordonareProduse(farm* pharma, char* cond){
     */
 
     char* p = cond;
-    farm aux;
-    aux.nrMeds = pharma->nrMeds;
-    for(int i=0;i<aux.nrMeds;++i){
-        aux.cont[i] = pharma->cont[i];
+    vectorDinamic* aux = creeazaVectDin(100);
+    Iterator* i = creaazaIterator(pharma);
+
+    for(prim(i);valid(i);urmator(i)){
+        pushBack(aux, *elementIT(i));
     }
+
     for(;*p;++p){
         if(*p>='A' && *p<='Z'){
             *p='a'+*p-'A';
@@ -200,16 +228,17 @@ farm ordonareProduse(farm* pharma, char* cond){
     }
 
     if(strcmp(cond, "nume") == 0){
-        qsort(aux.cont, aux.nrMeds, sizeof(stoc),cmpNume);
+        bubble_sort(aux,cmpNume);
     }else if(strcmp(cond, "concentratie") == 0){
-        qsort(aux.cont, aux.nrMeds, sizeof(stoc),cmpConcentr);
+        bubble_sort(aux,cmpConcentr);
     }else if(strcmp(cond, "stoc")==0){
-        qsort(aux.cont, aux.nrMeds, sizeof(stoc),cmpMarimeStoc);
+        bubble_sort(aux,cmpMarimeStoc);
     }
+    distrugeIT(i);
     return aux;
 }
 
-farm filtrareStoc(farm* pharma, int stocMin){
+vectorDinamic* filtrareStoc(vectorDinamic* pharma, int stocMin){
     /*
         Filtreaza farmacia dupa marimea stocului.
 
@@ -221,16 +250,17 @@ farm filtrareStoc(farm* pharma, int stocMin){
             farm aux: o farmacie provenita din farmacia initiala cu elementele filtrate
 
     */
-    farm aux;
-    aux.nrMeds = 0;
-    for(int i=0;i<pharma->nrMeds;++i){
-        if(pharma->cont[i].quantity >= stocMin){
-            aux.cont[aux.nrMeds++] = pharma->cont[i];
+    vectorDinamic* aux = creeazaVectDin(100);
+    Iterator* i = creaazaIterator(pharma);
+    for(prim(i);valid(i);urmator(i)){
+        if(elementIT(i)->quantity >= stocMin){
+            pushBack(aux, *elementIT(i));
         }
     }
+    distrugeIT(i);
     return aux;
 }
-farm filtrareNume(farm* pharma, char condNume){
+vectorDinamic* filtrareNume(vectorDinamic* pharma, char condNume){
     /*
         Filtreaza farmacia dupa prima litera din nume.
 
@@ -243,13 +273,14 @@ farm filtrareNume(farm* pharma, char condNume){
 
     */
     
-    farm aux;
-    aux.nrMeds = 0;
-    for(int i=0;i<pharma->nrMeds;++i){
-        if(pharma->cont[i].med.name[0] == condNume){
-            aux.cont[aux.nrMeds++] = pharma->cont[i];
+    vectorDinamic* aux = creeazaVectDin(100);
+    Iterator* i = creaazaIterator(pharma);
+    for(prim(i);valid(i);urmator(i)){
+        if(elementIT(i)->med.name[0] == condNume){
+            pushBack(aux, *elementIT(i));
         }
     }
+    distrugeIT(i);
     return aux;
 }
 
