@@ -1,5 +1,5 @@
-main
-.vscode
-test_service
-build
+#exclude everything except .c and .h files
 
+/*
+!/*.c
+!/*.h
