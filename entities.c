@@ -11,7 +11,7 @@ int compareStocs(stoc* prod1, stoc* prod2){
     
     return 1;
 
- //
+ 
 }
 
 
