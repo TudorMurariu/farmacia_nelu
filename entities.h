@@ -1,3 +1,6 @@
+#pragma once
+#include <string.h>
+
 typedef struct produse {
 
     //struct pentru definirea entitatii de medicament 
@@ -6,7 +9,7 @@ typedef struct produse {
     float concentr;
 }produs;
 
-typedef struct stocuri{
+typedef struct stocuri {
     produs med;
     int uniqueCode;
     int quantity;
