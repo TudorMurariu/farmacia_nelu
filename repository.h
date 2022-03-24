@@ -1,6 +1,7 @@
+#pragma once
 #include "entities.h"
 
-typedef struct{
+typedef struct {
     int cp;//capacitate
 
     int n;//dimensiune
@@ -9,7 +10,7 @@ typedef struct{
 
 }vectorDinamic;
 
-typedef struct{
+typedef struct {
 
     vectorDinamic* v;
 
@@ -23,7 +24,7 @@ typedef struct{
 
 vectorDinamic* creeazaVectDin(int cp);
 
-void redim(vectorDinamic *v);
+void redim(vectorDinamic* v);
 
 void distruge(vectorDinamic* v);
 
